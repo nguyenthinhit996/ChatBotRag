@@ -7,7 +7,8 @@ class Message(BaseModel):
     message: str
 
 class MessageResponse(BaseModel):
-    text: str
+    text: Optional[str] = None
+    role: Optional[str] = None
 
 class User(BaseModel):
     user_id: Optional[int] = None
@@ -17,14 +18,24 @@ class User(BaseModel):
 class Session(BaseModel):
     id: int
     user_id: int
-    session_start: str
-    session_end: str
-    title: str
+    session_start: Optional[str] = None
+    session_end: Optional[str] = None
+    title: Optional[str] = None
 
 class Messages(BaseModel):
-    id: int
     session_id: int
-    sender_role: str
-    message_text: str
-    created_at: str
-    message_timestemp: str
+    sender_role: Optional[str] = None
+    message_text: Optional[str] = None
+    created_at: Optional[str] = None
+    message_timestamp: Optional[str] = None
+
+class SessionDB(BaseModel):
+    user_id: int
+    session_start: Optional[str] = None
+    session_end: Optional[str] = None
+    title: Optional[str] = None    
+
+
+class UserDB(BaseModel):
+    username: Optional[str] = None
+    created_at: Optional[str] = None    

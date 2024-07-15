@@ -1,2 +1,15 @@
 fastapi
 uvicorn
+pydantic
+supabase
+asyncpg
+unstructured
+python-docx
+
+langgraph
+langchain-huggingface
+langchain 
+langchain-community
+gpt4all
+faiss-cpu
+langgraph

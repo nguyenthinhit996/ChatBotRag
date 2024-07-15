@@ -1,25 +1,22 @@
 // src/App.jsx
-import React from "react";
 import Toolbar from "@mui/material/Toolbar";
+import React, { useEffect } from "react";
 
+import MenuIcon from "@mui/icons-material/Menu";
+import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import MenuIcon from "@mui/icons-material/Menu";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import AppBar from "@mui/material/AppBar";
 
-import { Route, Routes, Link } from "react-router-dom";
-import Contact from "./pages/Contact";
+import { Link, Route, Routes } from "react-router-dom";
 import Chat from "./pages/Chat";
+import ChatbotPage from "./pages/Chat";
+import Contact from "./pages/Contact";
 import Home from "./pages/Home";
+import { getData } from "./api";
 
 const drawerWidth = 240;
 // const navItems = ['Home', 'About', 'Contact'];
@@ -30,48 +27,79 @@ const navItems = [
   { text: "Contact", path: "/contact" },
 ];
 
+const mockSesstion = [
+  {
+    id: 1,
+    user_id: 101,
+    session_start: "2024-07-13T09:00:00",
+    session_end: "2024-07-13T10:00:00",
+    title: "Initial Meeting",
+    isSelected: false,
+  },
+  {
+    id: 2,
+    user_id: 102,
+    session_start: "2024-07-14T14:00:00",
+    session_end: "2024-07-14T15:30:00",
+    title: "Project Planning",
+    isSelected: true,
+  },
+  {
+    id: 3,
+    user_id: 103,
+    session_start: "2024-07-15T11:00:00",
+    session_end: "2024-07-15T12:00:00",
+    title: "Training Session",
+    isSelected: false,
+  },
+  {
+    id: 4,
+    user_id: 101,
+    session_start: "2024-07-16T10:30:00",
+    session_end: "2024-07-16T11:30:00",
+    title: "Review Meeting",
+    isSelected: false,
+  },
+  {
+    id: 5,
+    user_id: 104,
+    session_start: "2024-07-17T13:00:00",
+    session_end: "2024-07-17T14:30:00",
+    title: "Client Presentation",
+    isSelected: false,
+  },
+];
+
 const App = (props) => {
-  const { window } = props;
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [sessionChat, setSessionChat] = React.useState([]);
 
-  const [list, setList] = React.useState([
-    { title: "Hello world", id: Date.now().toString() },
-  ]);
-
-  const handleDrawerToggle = () => {
-    setMobileOpen((prevState) => !prevState);
+  const handleGetAllSessionByUseId = async (userId) => {
+    try {
+      let url = "users/" + userId + "/sessions";
+      let data = await getData(url);
+      if(data && data.length > 0) {
+        data[0] = {
+          ...data[0],
+          isSelected: true
+        }
+      }
+      console.log("call data api:" ,data);
+      setSessionChat(data);
+    } catch (e) {
+      console.log(e);
+    }
   };
 
-  const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        MUI
-      </Typography>
-      <Divider />
-      {navItems.map((item) => (
-        // eslint-disable-next-line react/jsx-key
-        <Link
-          to={item.path}
-          style={{
-            textDecoration: "none",
-            color: "inherit",
-            width: "100%",
-            display: "block",
-            textAlign: "center",
-            padding: "8px 0",
-          }}
-        >
-          {item.text}
-        </Link>
-      ))}
-    </Box>
-  );
-
-  const container =
-    window !== undefined ? () => window().document.body : undefined;
+  useEffect(() => {
+    const userId = localStorage.getItem("user_id");
+    if (userId) {
+      handleGetAllSessionByUseId(userId);
+      console.log("Calling handleGetAllSessionByUseId");
+    }
+  }, []);
 
   return (
-    <Box>
+    <Box sx={{ width: "100%" }}>
       <Box sx={{ display: "flex", flexDirection: "column", gap: "3em" }}>
         <CssBaseline />
         <AppBar component="nav">
@@ -80,7 +108,6 @@ const App = (props) => {
               color="inherit"
               aria-label="open drawer"
               edge="start"
-              onClick={handleDrawerToggle}
               sx={{ mr: 2, display: { sm: "none" } }}
             >
               <MenuIcon />
@@ -112,26 +139,6 @@ const App = (props) => {
             </Box>
           </Toolbar>
         </AppBar>
-        <nav>
-          <Drawer
-            container={container}
-            variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true, // Better open performance on mobile.
-            }}
-            sx={{
-              display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: drawerWidth,
-              },
-            }}
-          >
-            {drawer}
-          </Drawer>
-        </nav>
         <Box
           component="main"
           sx={{
@@ -140,11 +147,21 @@ const App = (props) => {
           }}
         >
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home  callBack={handleGetAllSessionByUseId} />} />
             <Route path="/contact" element={<Contact />} />
-            <Route
+            {/* <Route
               path="/Chat"
               element={<Chat list={list} setList={setList} />}
+            /> */}
+            <Route
+              path="/Chat"
+              element={
+                <ChatbotPage
+                  sessionChat={sessionChat}
+                  setSessionChat={setSessionChat}
+                  callBack={handleGetAllSessionByUseId}
+                />
+              }
             />
           </Routes>
         </Box>
