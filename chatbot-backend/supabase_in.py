@@ -7,8 +7,8 @@ from supabase import create_client, Client
 from typing import List
 
 
-SUPABASE_URL ="https://ndbjaosxvzwvtvcdvpyc.supabase.co"
-SUPABASE_KEY ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kYmphb3N4dnp3dnR2Y2R2cHljIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcyMDcxNDA0MCwiZXhwIjoyMDM2MjkwMDQwfQ.n3hlcpQIl4WKR11VEcGy1ICPWHtXZ2sIo2pjgZqwgNo"
+SUPABASE_URL ="https://.supabase.co"
+SUPABASE_KEY =".."
 
 # Initialize Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
