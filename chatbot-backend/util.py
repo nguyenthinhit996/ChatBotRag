@@ -7,6 +7,13 @@ from supabase_in import (
     create_message, get_message, update_message, delete_message,
     get_session_by_user_id, get_messages_by_session_id
 )
+import os
+
+def get_file_path(relative_path: str) -> str:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    print("script_dir")
+    print(script_dir)
+    return os.path.join(script_dir, relative_path)
 
 def parse_messages_to_responses(messages: List[Messages]) -> List[MessageResponse]:
     return [MessageResponse(text=message.message_text, role=message.sender_role) for message in messages if message.message_text is not None]
@@ -17,9 +24,9 @@ async def generateMesages(role, text, session_id):
     message_text = text
     created_at = str(date.today())  
     message_time = str(date.today())
-    message = Messages(session_id=session_id, sender_role=sender_role, message_text= message_text, created_at=created_at, message_timestamp=message_time)
-    print(message)
-    await create_message(message)
+    # message = Messages(session_id=session_id, sender_role=sender_role, message_text= message_text, created_at=created_at, message_timestamp=message_time)
+    # print(message)
+    # await create_message(message)
 
 async def addNewSession(session: SessionDB):
     await create_session(session)

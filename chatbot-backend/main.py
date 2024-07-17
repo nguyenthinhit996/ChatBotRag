@@ -29,13 +29,17 @@ session_manager = startLLMInitial()
 def read_root():
     return {"Hello": "World"}
 
+@prefix_router.post("/linkolama")
+async def create_new_user(link: str):
+    session_manager = startLLMInitial(link)
+
 # Endpoint to receive user messages
 @prefix_router.post("/chatbot/message", response_model=MessageResponse)
 async def receive_message(message: Message,  session: int = Header(None)):
     await generateMesages('user', message.message, session)
     response_message = session_manager.chat(session, message.message)
     await generateMesages('bot', response_message, session)
-    return MessageResponse(text=response_message, role="bot")
+    return MessageResponse(text=response_message['output'], role="bot")
 
 # Endpoint to fetch chat history
 @prefix_router.get("/chatbot/history", response_model=List[Message])

@@ -18,56 +18,15 @@ import Contact from "./pages/Contact";
 import Home from "./pages/Home";
 import { getData } from "./api";
 
+import MovingImage from "./pages/Moving";
+
 const drawerWidth = 240;
 // const navItems = ['Home', 'About', 'Contact'];
 
 const navItems = [
-  { text: "Home", path: "/" },
+  // { text: "Home", path: "/" },
   { text: "Chat", path: "/chat" },
   { text: "Contact", path: "/contact" },
-];
-
-const mockSesstion = [
-  {
-    id: 1,
-    user_id: 101,
-    session_start: "2024-07-13T09:00:00",
-    session_end: "2024-07-13T10:00:00",
-    title: "Initial Meeting",
-    isSelected: false,
-  },
-  {
-    id: 2,
-    user_id: 102,
-    session_start: "2024-07-14T14:00:00",
-    session_end: "2024-07-14T15:30:00",
-    title: "Project Planning",
-    isSelected: true,
-  },
-  {
-    id: 3,
-    user_id: 103,
-    session_start: "2024-07-15T11:00:00",
-    session_end: "2024-07-15T12:00:00",
-    title: "Training Session",
-    isSelected: false,
-  },
-  {
-    id: 4,
-    user_id: 101,
-    session_start: "2024-07-16T10:30:00",
-    session_end: "2024-07-16T11:30:00",
-    title: "Review Meeting",
-    isSelected: false,
-  },
-  {
-    id: 5,
-    user_id: 104,
-    session_start: "2024-07-17T13:00:00",
-    session_end: "2024-07-17T14:30:00",
-    title: "Client Presentation",
-    isSelected: false,
-  },
 ];
 
 const App = (props) => {
@@ -77,13 +36,13 @@ const App = (props) => {
     try {
       let url = "users/" + userId + "/sessions";
       let data = await getData(url);
-      if(data && data.length > 0) {
+      if (data && data.length > 0) {
         data[0] = {
           ...data[0],
-          isSelected: true
-        }
+          isSelected: true,
+        };
       }
-      console.log("call data api:" ,data);
+      console.log("call data api:", data);
       setSessionChat(data);
     } catch (e) {
       console.log(e);
@@ -102,22 +61,20 @@ const App = (props) => {
     <Box sx={{ width: "100%" }}>
       <Box sx={{ display: "flex", flexDirection: "column", gap: "3em" }}>
         <CssBaseline />
-        <AppBar component="nav">
+        <AppBar component="nav" sx={{ backgroundColor: "#0077cbb5" }}>
           <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              sx={{ mr: 2, display: { sm: "none" } }}
-            >
-              <MenuIcon />
-            </IconButton>
             <Typography
               variant="h6"
               component="div"
               sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+              onClick={() => (window.location.href = "/")}
             >
-              MUI
+              <MovingImage
+                imageUrl="https://cdn3d.iconscout.com/3d/premium/thumb/chatbot-6899426-5627910.png"
+                containerWidth={screen.width - 150}
+                containerHeight={50}
+                imageSize={60}
+              />
             </Typography>
             <Box sx={{ display: "flex", gap: 2 }}>
               {navItems.map((item) => (
@@ -131,6 +88,7 @@ const App = (props) => {
                     display: "block",
                     textAlign: "center",
                     padding: "8px 0",
+                    fontWeight: "bold",
                   }}
                 >
                   {item.text}
@@ -147,7 +105,10 @@ const App = (props) => {
           }}
         >
           <Routes>
-            <Route path="/" element={<Home  callBack={handleGetAllSessionByUseId} />} />
+            <Route
+              path="/"
+              element={<Home callBack={handleGetAllSessionByUseId} />}
+            />
             <Route path="/contact" element={<Contact />} />
             {/* <Route
               path="/Chat"

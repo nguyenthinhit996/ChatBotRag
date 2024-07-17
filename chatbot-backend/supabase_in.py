@@ -5,10 +5,14 @@ import httpx
 from models import User, Session, Message, Messages, SessionDB, UserDB
 from supabase import create_client, Client
 from typing import List
+from dotenv import load_dotenv
+import os
 
+load_dotenv()  # Load environment variables from .env file
 
-SUPABASE_URL ="https://.supabase.co"
-SUPABASE_KEY =".."
+# Access environment variables
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 # Initialize Supabase client
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)

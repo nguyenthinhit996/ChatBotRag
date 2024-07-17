@@ -13,11 +13,12 @@ from pydantic import BaseModel, Field
 from langchain.tools import StructuredTool
 from langchain import hub
 
-def startLLMInitial():
-    # Initialize the session manager
-    mistral_llm = Ollama(base_url="https://306b-34-16-161-126.ngrok-free.app/", model="mistral")
-    session_manager = SessionManager(mistral_llm)
-    return session_manager
+def startLLMInitial(link: str):
+    if link is not None:
+        # Initialize the session manager
+        mistral_llm = Ollama(base_url=link, model="mistral")
+        session_manager = SessionManager(mistral_llm)
+        return session_manager
 
 class UserSession:
     def __init__(self, user_id, local_llm):

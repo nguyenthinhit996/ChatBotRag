@@ -6,10 +6,16 @@ asyncpg
 unstructured
 python-docx
 
-langgraph
 langchain-huggingface
 langchain 
 langchain-community
 gpt4all
 faiss-cpu
 langgraph
+langchain-mistralai
+langchain-openai
+sqlalchemy
+
+psycopg 
+psycopg-pool
+langchainhub

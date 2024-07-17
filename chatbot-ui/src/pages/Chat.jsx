@@ -44,6 +44,10 @@ const ChatPanel = styled(Paper)({
 
 let introMessage = { text: "Hi I am your assistant, ask me anything!" };
 
+const url_message = import.meta.env.VITE_API_URL_MESSAGE;
+
+console.log(url_message);
+
 const ChatbotPage = ({ setSessionChat, sessionChat, callBack }) => {
   const userId = localStorage.getItem("user_id");
   // Check if user_id exists
@@ -76,7 +80,7 @@ const ChatbotPage = ({ setSessionChat, sessionChat, callBack }) => {
     return response;
   };
 
-  const actionNewChat =  async() => {
+  const actionNewChat = async () => {
     resetSelected();
     let dataNew = {
       user_id: userId,
@@ -87,11 +91,11 @@ const ChatbotPage = ({ setSessionChat, sessionChat, callBack }) => {
 
     //call api get new chat
     try {
-      await postData("/sessions", dataNew)
-    }catch(e){
+      await postData("/sessions", dataNew);
+    } catch (e) {
       console.log(e);
     }
-    await callBack(userId)
+    await callBack(userId);
     // dataNew = { ...dataNew, id: getRandomInt(100, 10000) };
     // let newSessionChat = cloneDeep(sessionChat);
     // newSessionChat.unshift(dataNew);
@@ -123,7 +127,6 @@ const ChatbotPage = ({ setSessionChat, sessionChat, callBack }) => {
       let url = "/sessions/" + idSessionChat + "/messages";
       let data = await getData(url);
       setInitialMessages(data);
-      url = "http://127.0.0.1:8080/api/chatbot/" + idSessionChat + "/message";
       sessionIdRef.current = idSessionChat;
     }
   };
@@ -198,7 +201,7 @@ const ChatbotPage = ({ setSessionChat, sessionChat, callBack }) => {
               <DeepChat
                 avatars="true"
                 request={{
-                  url: "http://192.168.18.23:8080/api/chatbot/message",
+                  url: url_message,
                   method: "POST",
                 }}
                 chatStyle={{
