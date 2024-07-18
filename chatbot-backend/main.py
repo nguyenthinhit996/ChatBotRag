@@ -36,9 +36,10 @@ async def create_new_user(link: str):
 # Endpoint to receive user messages
 @prefix_router.post("/chatbot/message", response_model=MessageResponse)
 async def receive_message(message: Message,  session: int = Header(None)):
-    await generateMesages('user', message.message, session)
+    generateMesages('user', message.message, session)
     response_message = session_manager.chat(session, message.message)
-    await generateMesages('bot', response_message, session)
+    generateMesages('bot', response_message['output'], session)
+    print(response_message)
     return MessageResponse(text=response_message['output'], role="bot")
 
 # Endpoint to fetch chat history

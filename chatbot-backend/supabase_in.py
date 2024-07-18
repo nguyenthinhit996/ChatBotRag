@@ -2,11 +2,13 @@
 from typing import Optional
 import asyncpg
 import httpx
-from models import User, Session, Message, Messages, SessionDB, UserDB
+from models import User, Session, Message, Messages, SessionDB, UserDB, BookingDB, Booking
 from supabase import create_client, Client
 from typing import List
 from dotenv import load_dotenv
 import os
+from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
+from datetime import datetime
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -47,7 +49,7 @@ async def get_user_by_name(username: str) -> Optional[User]:
     return None
 
 async def get_session_by_user_id(user_id: int) -> List[Session]:
-    response = supabase.table('sessions').select('*').eq('user_id', user_id).execute()
+    response = supabase.table('sessions').select('*').eq('user_id', user_id).order("id", desc=True).execute()
     sessions = response.data
     print(sessions)
     return [Session(**session) for session in sessions]
@@ -76,8 +78,8 @@ async def delete_session(session_id: int):
     await supabase.table('sessions').delete().eq('id', session_id).execute()
 
 # Message Operations
-async def create_message(message: Messages):
-    return supabase.table('messages').insert(message.dict()).execute()
+def create_message(message: Messages):
+    supabase.table('messages').insert(message.dict()).execute()
 
 async def get_message(message_id: int) -> Message:
     message = await supabase.table('messages').select('*').eq('id', message_id).single()
@@ -94,3 +96,79 @@ async def get_messages_by_session_id(session_id: int) -> List[Messages]:
     messages = response.data
     print(messages)
     return [Messages(**message) for message in messages]
+
+
+def create_message_format(row):
+    if row['sender_role'] == 'bot':
+        return AIMessage(content=row['message_text'])
+    elif row['sender_role'] == 'user':
+        return HumanMessage(content=row['message_text'])
+    else:
+        return BaseMessage(content=row['message_text'])
+
+def get_BaseMessage_by_session_id(session_id: int) -> List[BaseMessage]:
+    response = supabase.table('messages').select('sender_role, message_text').eq('session_id', session_id).order("message_timestamp", desc=True).limit(10).execute()
+    messages = response.data
+    print("get_BaseMessage_by_session_id")
+    print(messages)
+    
+    return [create_message_format(row) for row in messages]
+
+def create_booking(booking: BookingDB) -> BookingDB:
+    """Create a new booking in the database."""
+    booking_dict = booking.model_dump(exclude_unset=True)
+    if 'created_at' not in booking_dict:
+        booking_dict['created_at'] = datetime.now().isoformat()
+        booking_dict['status'] = 'Booking'
+    
+    response = supabase.table("booking").insert(booking_dict).execute()
+    return BookingDB(**response.data[0])
+
+def get_bookings(limit: int = 5) -> List[BookingDB]:
+    """Retrieve the latest bookings from the database."""
+    response = (
+        supabase.table("booking")
+        .select("*")
+        .order("created_at", desc=True)
+        .limit(limit)
+        .execute()
+    )
+    return [BookingDB(**booking) for booking in response.data]
+
+def update_booking(booking_id: int, updated_data: dict) -> BookingDB:
+    """Update an existing booking in the database."""
+    response = supabase.table("booking").update(updated_data).eq("id", booking_id).execute()
+    if not response.data:
+        raise ValueError(f"No booking found with id {booking_id}")
+    return BookingDB(**response.data[0])
+
+def delete_booking(booking_id: int) -> bool:
+    """Delete a booking from the database."""
+    response = supabase.table("booking").delete().eq("id", booking_id).execute()
+    return len(response.data) > 0
+
+def get_bookings_by_email(email: str) -> List[Booking]:
+    response = (
+        supabase.table("booking")
+        .select("*")
+        .eq("email", email)
+        .execute()
+    )
+    
+    if not response.data:
+        return []
+    
+    return [Booking(**booking) for booking in response.data]
+
+def get_bookings_by_id(id: str) -> Booking:
+    response = (
+        supabase.table("booking")
+        .select("*")
+        .eq("id", id)
+        .execute()
+    )
+    
+    if not response.data:
+        return None
+    booking = response.data[0]
+    return Booking(**booking)
