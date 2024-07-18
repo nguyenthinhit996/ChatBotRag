@@ -39,3 +39,21 @@ class SessionDB(BaseModel):
 class UserDB(BaseModel):
     username: Optional[str] = None
     created_at: Optional[str] = None    
+
+
+class Booking(BaseModel):
+    id: int
+    email: Optional[str] = None
+    venue: Optional[str] = None
+    created_at: Optional[str] = None
+    start: Optional[str] = None
+    end: Optional[str] = None
+    status: Optional[str] = None    
+
+class BookingDB(BaseModel):
+    email: Optional[str] = None
+    venue: Optional[str] = None
+    created_at: Optional[str] = None
+    start: Optional[str] = None
+    end: Optional[str] = None
+    status: Optional[str] = None        

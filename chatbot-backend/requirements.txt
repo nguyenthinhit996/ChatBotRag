@@ -19,3 +19,4 @@ sqlalchemy
 psycopg 
 psycopg-pool
 langchainhub
+pandas
